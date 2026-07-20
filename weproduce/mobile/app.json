@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "WeProduce",
+    "slug": "weproduce",
+    "scheme": "weproduce",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B0F1A"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.weproduce.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0B0F1A"
+      },
+      "package": "com.weproduce.app"
+    },
+    "extra": {
+      "apiUrl": "https://your-app.vercel.app/api",
+      "googleClientId": "your-google-client-id.apps.googleusercontent.com"
+    }
+  }
+}
