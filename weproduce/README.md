@@ -1,79 +1,36 @@
-# WeProduce
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-**Code Every Day. Compete Every Week.**
+## Getting Started
 
-A coding-accountability platform for exactly three developers. Solves on LeetCode and
-HackerRank plus GitHub commits are tracked automatically and rolled into **one** unified
-weekly score on **one** leaderboard.
-
-## Structure
-
-```
-weproduce/
-├── backend/          Next.js (App Router) REST API, TypeScript, Prisma
-│   ├── prisma/schema.prisma
-│   └── src/
-│       ├── app/api/          route handlers (thin HTTP layer)
-│       ├── controllers/      request validation
-│       ├── services/         business logic (scoring, streaks, platform syncs)
-│       ├── repositories/     database access (Prisma)
-│       ├── middleware/       auth
-│       ├── config/           scoring rules
-│       ├── types/            shared DTOs
-│       └── utils/            logger, JWT, API response envelope, date helpers
-├── mobile/           Expo (React Native) app, TypeScript, NativeWind
-│   └── src/
-│       ├── screens/          Splash, Login, Onboarding, Dashboard, Leaderboard,
-│       │                     Activity, Profile, Settings
-│       ├── components/       ScoreCard, LeaderboardCard, ActivityCard, StreakCard, etc.
-│       ├── navigation/        stack + bottom tabs
-│       ├── context/           auth state
-│       ├── hooks/              React Query data hooks
-│       └── services/           API client, secure token storage
-├── database/
-│   └── schema.sql     raw SQL schema (run this in Supabase)
-└── docs/
-    ├── API.md         full endpoint reference
-    ├── SETUP.md        local dev setup, Google OAuth, platform linking
-    └── DEPLOYMENT.md    Vercel + EAS deployment steps
-```
-
-## Quick start
-
-See [`docs/SETUP.md`](docs/SETUP.md) for the full walkthrough. In short:
+First, run the development server:
 
 ```bash
-# 1. Database
-# Run database/schema.sql in your Supabase SQL editor
-
-# 2. Backend
-cd backend && cp .env.example .env   # fill in real values
-npm install && npx prisma generate && npm run dev
-
-# 3. Mobile
-cd ../mobile && npm install && npm start
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## Scoring
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-| Source                | Points |
-|------------------------|--------|
-| LeetCode — Easy         | 5      |
-| LeetCode — Medium       | 10     |
-| LeetCode — Hard         | 20     |
-| HackerRank challenge    | 8      |
-| GitHub push             | 2      |
-| Daily streak bonus      | 5      |
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-One score. One leaderboard. Reset every Monday (ISO week).
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Known integration constraints
+## Learn More
 
-- **LeetCode** has no official public API — syncing uses LeetCode's unauthenticated
-  GraphQL endpoint (`recentAcSubmissionList`), which is undocumented and could change.
-- **HackerRank** has no public API for reading submission history at all. Auto-sync
-  attempts an unofficial endpoint and gracefully degrades to manual logging if it fails
-  (see `docs/SETUP.md`).
-- **GitHub** uses the official REST API via Octokit and is the most reliable of the three.
+To learn more about Next.js, take a look at the following resources:
 
-Full details in [`docs/API.md`](docs/API.md) and [`docs/SETUP.md`](docs/SETUP.md).
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
