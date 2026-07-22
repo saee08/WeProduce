@@ -56,7 +56,7 @@ export function DashboardScreen() {
       {data.leaderboardPreview.length === 0 ? (
         <EmptyState title="No scores yet this week" subtitle="Sync your activity to get on the board." />
       ) : (
-        data.leaderboardPreview.map((entry) => (
+        data.leaderboardPreview.map((entry: any) => (
           <LeaderboardCard key={entry.userId} entry={entry} isCurrentUser={entry.userId === profile?.userId} />
         ))
       )}
@@ -65,7 +65,7 @@ export function DashboardScreen() {
       {data.recentActivity.length === 0 ? (
         <EmptyState icon="🌱" title="No activity yet" subtitle="Solve a problem or push a commit to get started." />
       ) : (
-        data.recentActivity.map((activity) => <ActivityCard key={activity.id} activity={activity} />)
+        data.recentActivity.map((activity: any) => <ActivityCard key={activity.id} activity={activity} />)
       )}
     </ScrollView>
   );

@@ -7,6 +7,7 @@ const updateProfileSchema = z.object({
   avatarUrl: z.string().url().optional(),
   bio: z.string().max(500).optional(),
   github: z.string().min(1).max(100).optional(),
+  githubPat: z.string().optional(),
   leetcode: z.string().min(1).max(100).optional(),
   hackerrank: z.string().min(1).max(100).optional(),
 });

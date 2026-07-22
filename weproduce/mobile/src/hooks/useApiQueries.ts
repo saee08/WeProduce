@@ -49,8 +49,14 @@ export function useSyncActivities() {
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: Partial<ProfileDTO> & { github?: string; leetcode?: string; hackerrank?: string }) =>
-      profileApi.updateProfile(input),
+    mutationFn: (
+      input: Partial<ProfileDTO> & {
+        github?: string;
+        leetcode?: string;
+        hackerrank?: string;
+        githubPat?: string;
+      }
+    ) => profileApi.updateProfile(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.profile });
     },

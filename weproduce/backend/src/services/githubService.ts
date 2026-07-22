@@ -39,10 +39,11 @@ export const githubService = {
       };
 
       for (const commit of payload.commits ?? []) {
+        if (!commit || !commit.sha) continue;
         commits.push({
           sha: commit.sha,
           repository: event.repo.name,
-          message: commit.message,
+          message: commit.message ?? "Git commit push",
           date: event.created_at ?? new Date().toISOString(),
           url: `https://github.com/${event.repo.name}/commit/${commit.sha}`,
         });
@@ -62,11 +63,13 @@ export const githubService = {
 
     let created = 0;
     for (const commit of commits) {
+      if (!commit) continue;
+      const msg = commit.message || "Git commit push";
       const result = await activityRepository.createIfNotExists({
         userId,
         platform: "github",
         activityType: "github_push",
-        title: commit.message.split("\n")[0].slice(0, 200),
+        title: (msg.split("\n")[0] || msg).slice(0, 200),
         difficulty: "none",
         points: pointsForGithubPush(),
         activityDate: toUtcMidnight(new Date(commit.date)),

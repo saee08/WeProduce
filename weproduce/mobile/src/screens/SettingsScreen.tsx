@@ -1,24 +1,29 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Alert, ScrollView, Switch, useColorScheme } from "react-native";
+import { View, Text, TextInput, Alert, ScrollView, Switch, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useAuth } from "@/context/AuthContext";
 import { useUpdateProfile } from "@/hooks/useApiQueries";
-import { PrimaryButton } from "@/components/UIPrimitives";
-import { GradientCard } from "@/components/GradientCard";
+import { useTheme } from "@/context/ThemeContext";
 
 export function SettingsScreen() {
   const { profile, signOut } = useAuth();
+  const { colors, mode, toggleTheme } = useTheme();
   const updateProfile = useUpdateProfile();
-  const systemScheme = useColorScheme();
-  const [darkMode, setDarkMode] = useState(systemScheme !== "light");
 
   const [github, setGithub] = useState(profile?.github ?? "");
+  const [githubPat, setGithubPat] = useState("");
   const [leetcode, setLeetcode] = useState(profile?.leetcode ?? "");
   const [hackerrank, setHackerrank] = useState(profile?.hackerrank ?? "");
 
   const handleSave = async () => {
     try {
-      await updateProfile.mutateAsync({ github, leetcode, hackerrank });
-      Alert.alert("Saved", "Your linked accounts were updated.");
+      await updateProfile.mutateAsync({
+        github: github.trim() || undefined,
+        leetcode: leetcode.trim() || undefined,
+        hackerrank: hackerrank.trim() || undefined,
+        githubPat: githubPat.trim() || undefined,
+      });
+      setGithubPat("");
+      Alert.alert("Saved", "Your linked accounts and settings were updated.");
     } catch (err) {
       Alert.alert("Couldn't save", err instanceof Error ? err.message : "Please try again.");
     }
@@ -32,36 +37,85 @@ export function SettingsScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ padding: 20, paddingTop: 60, paddingBottom: 40 }}>
-      <Text className="text-textPrimary text-2xl font-extrabold mb-6">Settings</Text>
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      contentContainerStyle={styles.content}
+    >
+      <Text style={[styles.headerTitle, { color: colors.text }]}>Settings & Themes</Text>
 
-      <GradientCard className="mb-4">
-        <View className="flex-row justify-between items-center">
-          <Text className="text-textPrimary font-medium">Dark Mode</Text>
+      {/* Theme Toggle Card */}
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <View style={styles.rowBetween}>
+          <View>
+            <Text style={[styles.cardTitle, { color: colors.text }]}>App Theme Mode</Text>
+            <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
+              {mode === "dark" ? "Dark Mode (Default)" : "Light Mode"}
+            </Text>
+          </View>
           <Switch
-            value={darkMode}
-            onValueChange={setDarkMode}
-            trackColor={{ false: "#242C42", true: "#6C5CE7" }}
-            thumbColor="#F5F6FA"
+            value={mode === "dark"}
+            onValueChange={toggleTheme}
+            trackColor={{ false: "#B2BEC3", true: colors.primary }}
+            thumbColor="#FFF"
           />
         </View>
-      </GradientCard>
-
-      <GradientCard>
-        <Text className="text-textPrimary font-semibold mb-4">Linked Accounts</Text>
-
-        <FieldRow label="GitHub" value={github} onChangeText={setGithub} />
-        <FieldRow label="LeetCode" value={leetcode} onChangeText={setLeetcode} />
-        <FieldRow label="HackerRank" value={hackerrank} onChangeText={setHackerrank} />
-
-        <View className="mt-2">
-          <PrimaryButton label="Save Changes" onPress={handleSave} loading={updateProfile.isPending} />
-        </View>
-      </GradientCard>
-
-      <View className="mt-8">
-        <PrimaryButton label="Sign Out" onPress={handleSignOut} variant="secondary" />
       </View>
+
+      {/* Linked Accounts */}
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[styles.cardTitle, { color: colors.text, marginBottom: 16 }]}>
+          Platform Handles & Tokens
+        </Text>
+
+        <FieldRow
+          label="GitHub Username"
+          value={github}
+          onChangeText={setGithub}
+          placeholder="e.g. octocat"
+          colors={colors}
+        />
+
+        <FieldRow
+          label="GitHub PAT (Personal Access Token)"
+          value={githubPat}
+          onChangeText={setGithubPat}
+          placeholder="ghp_... (For private repos)"
+          secureTextEntry
+          colors={colors}
+        />
+
+        <FieldRow
+          label="LeetCode Username"
+          value={leetcode}
+          onChangeText={setLeetcode}
+          placeholder="e.g. tourist"
+          colors={colors}
+        />
+
+        <FieldRow
+          label="HackerRank Username"
+          value={hackerrank}
+          onChangeText={setHackerrank}
+          placeholder="e.g. dev_pro"
+          colors={colors}
+        />
+
+        <TouchableOpacity
+          onPress={handleSave}
+          disabled={updateProfile.isPending}
+          style={[styles.saveBtn, { backgroundColor: colors.primary }]}
+        >
+          {updateProfile.isPending ? (
+            <ActivityIndicator color="#FFF" />
+          ) : (
+            <Text style={{ color: "#FFF", fontWeight: "700" }}>Save Changes</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity onPress={handleSignOut} style={[styles.signOutBtn, { borderColor: "#FF6B6B" }]}>
+        <Text style={{ color: "#FF6B6B", fontWeight: "700" }}>Sign Out</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -70,21 +124,98 @@ function FieldRow({
   label,
   value,
   onChangeText,
+  placeholder,
+  secureTextEntry,
+  colors,
 }: {
   label: string;
   value: string;
   onChangeText: (v: string) => void;
+  placeholder?: string;
+  secureTextEntry?: boolean;
+  colors: any;
 }) {
   return (
-    <View className="mb-3">
-      <Text className="text-textSecondary text-xs uppercase tracking-widest mb-1.5">{label}</Text>
+    <View style={styles.fieldGroup}>
+      <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text>
       <TextInput
         value={value}
         onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={colors.textSecondary}
+        secureTextEntry={secureTextEntry}
         autoCapitalize="none"
         autoCorrect={false}
-        className="bg-surfaceAlt text-textPrimary rounded-xl px-3.5 py-3 border border-border"
+        style={[
+          styles.input,
+          { backgroundColor: colors.cardSecondary, color: colors.text, borderColor: colors.border },
+        ]}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    padding: 20,
+    paddingTop: 54,
+    paddingBottom: 40,
+    gap: 16,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "800",
+    marginBottom: 4,
+  },
+  card: {
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 18,
+  },
+  rowBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  cardSubtitle: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  fieldGroup: {
+    marginBottom: 12,
+  },
+  label: {
+    fontSize: 11,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    marginBottom: 6,
+    letterSpacing: 0.5,
+  },
+  input: {
+    borderRadius: 10,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+  },
+  saveBtn: {
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  signOutBtn: {
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: "center",
+    marginTop: 12,
+  },
+});

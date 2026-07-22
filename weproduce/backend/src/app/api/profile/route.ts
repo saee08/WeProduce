@@ -5,8 +5,9 @@ import { ok, fail } from "@/utils/apiResponse";
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = requireAuth(request);
-    const data = await profileController.getProfile(userId);
+    const authUser = requireAuth(request);
+    const targetUserId = request.nextUrl.searchParams.get("userId") || authUser.userId;
+    const data = await profileController.getProfile(targetUserId);
     return ok(data);
   } catch (error) {
     return fail(error);

@@ -1,18 +1,24 @@
 import jwt from "jsonwebtoken";
 import type { AuthTokenPayload } from "@/types/domain";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? "7d";
-
-if (!JWT_SECRET) {
-  // Fail fast at boot rather than issuing insecure tokens silently.
-  throw new Error("JWT_SECRET is not set. Add it to your environment variables.");
+function getSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("JWT_SECRET is not set. Add it to your environment variables.");
+    }
+    return "default-weproduce-dev-jwt-secret-key-change-in-prod";
+  }
+  return secret;
 }
 
 export function signAuthToken(payload: AuthTokenPayload): string {
-  return jwt.sign(payload, JWT_SECRET as string, { expiresIn: JWT_EXPIRES_IN });
+  const secret = getSecret();
+  const expiresIn = process.env.JWT_EXPIRES_IN ?? "7d";
+  return jwt.sign(payload, secret, { expiresIn: expiresIn as any });
 }
 
 export function verifyAuthToken(token: string): AuthTokenPayload {
-  return jwt.verify(token, JWT_SECRET as string) as AuthTokenPayload;
+  const secret = getSecret();
+  return jwt.verify(token, secret) as AuthTokenPayload;
 }

@@ -131,7 +131,31 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trg_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 CREATE TRIGGER trg_profiles_updated_at BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 CREATE TRIGGER trg_platform_accounts_updated_at BEFORE UPDATE ON platform_accounts FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-CREATE TRIGGER trg_streaks_updated_at BEFORE UPDATE ON streaks FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+-- ----------------------------------------------------------------------------
+-- DISCUSSIONS — posts and thread comments for cohort communication
+-- ----------------------------------------------------------------------------
+CREATE TABLE discussion_posts (
+    id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id            UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title              TEXT NOT NULL,
+    content            TEXT NOT NULL,
+    created_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at         TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_discussion_posts_created_at ON discussion_posts(created_at DESC);
+
+CREATE TABLE discussion_comments (
+    id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_id            UUID NOT NULL REFERENCES discussion_posts(id) ON DELETE CASCADE,
+    user_id            UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    content            TEXT NOT NULL,
+    created_at         TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_discussion_comments_post_id ON discussion_comments(post_id);
+
+CREATE TRIGGER trg_discussion_posts_updated_at BEFORE UPDATE ON discussion_posts FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- ----------------------------------------------------------------------------
 -- Convenience view: current single leaderboard (this week)

@@ -51,11 +51,12 @@ export const authService = {
         throw ApiError.forbidden("This account is not authorized for WeProduce.");
       }
 
+      const displayName: string = payload.name || payload.email.split("@")[0] || "User";
       user = await userRepository.createFromGoogleProfile({
         googleId: payload.sub,
         email: payload.email,
         emailVerified: payload.email_verified ?? false,
-        displayName: payload.name ?? payload.email.split("@")[0],
+        displayName,
         avatarUrl: payload.picture ?? null,
       });
       logger.info({ userId: user.id }, "New user provisioned via Google OAuth");

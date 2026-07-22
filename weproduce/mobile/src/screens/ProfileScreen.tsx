@@ -36,7 +36,7 @@ export function ProfileScreen() {
         <EmptyState title="No activity history yet" />
       ) : (
         <View>
-          {activities.map((activity) => (
+          {activities.map((activity: any) => (
             <ActivityCard key={activity.id} activity={activity} />
           ))}
         </View>

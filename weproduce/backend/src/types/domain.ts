@@ -55,3 +55,38 @@ export interface DashboardDTO {
   recentActivity: ActivityDTO[];
   leaderboardPreview: LeaderboardEntryDTO[];
 }
+
+export interface DiscussionPostDTO {
+  id: string;
+  userId: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  author: {
+    id: string;
+    displayName: string;
+    avatarUrl: string | null;
+  };
+  commentCount: number;
+}
+
+export interface DiscussionCommentDTO {
+  id: string;
+  postId: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+  author: {
+    id: string;
+    displayName: string;
+    avatarUrl: string | null;
+  };
+}
+
+export interface ManualSolveInput {
+  platform: "hackerrank" | "leetcode";
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  problemUrl?: string;
+}

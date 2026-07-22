@@ -39,14 +39,15 @@ export const profileService = {
       github?: string;
       leetcode?: string;
       hackerrank?: string;
+      githubPat?: string;
     }
   ) {
-    const { github, leetcode, hackerrank, ...profileFields } = input;
+    const { github, leetcode, hackerrank, githubPat, ...profileFields } = input;
 
     if (Object.keys(profileFields).length > 0) {
       await userRepository.updateProfile(userId, profileFields);
     }
-    if (github) await userRepository.upsertPlatformAccount(userId, "github", github);
+    if (github) await userRepository.upsertPlatformAccount(userId, "github", github, githubPat);
     if (leetcode) await userRepository.upsertPlatformAccount(userId, "leetcode", leetcode);
     if (hackerrank) await userRepository.upsertPlatformAccount(userId, "hackerrank", hackerrank);
 

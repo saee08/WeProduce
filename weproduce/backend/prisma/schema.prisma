@@ -51,6 +51,8 @@ model User {
   activities        Activity[]
   scores            Score[]
   streak            Streak?
+  discussionPosts   DiscussionPost[]
+  discussionComments DiscussionComment[]
 
   @@map("users")
 }
@@ -144,4 +146,33 @@ model Streak {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("streaks")
+}
+
+model DiscussionPost {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  title     String
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments DiscussionComment[]
+
+  @@index([createdAt(sort: Desc)])
+  @@map("discussion_posts")
+}
+
+model DiscussionComment {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  post DiscussionPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("discussion_comments")
 }

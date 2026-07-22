@@ -89,7 +89,8 @@ export const leetcodeService = {
         difficultyCache[submission.titleSlug] = difficulty ?? "Easy";
       }
 
-      const difficulty = difficultyCache[submission.titleSlug].toLowerCase() as Difficulty;
+      const rawDiff = difficultyCache[submission.titleSlug] ?? "Easy";
+      const difficulty = rawDiff.toLowerCase() as Difficulty;
       const points = pointsForLeetCode(difficulty as "easy" | "medium" | "hard");
 
       await activityRepository.createIfNotExists({
